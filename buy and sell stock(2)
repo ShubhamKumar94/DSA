@@ -1,0 +1,73 @@
+import java.util.Arrays;
+import java.util.Vector;
+
+
+public class Solution {
+    public static long recursionFun(long[] values,  int index, int sellFlag, int arrayLength, Vector<Vector<Long>> dpArray) {
+
+        if (index > arrayLength) {
+            return 0;
+        }
+
+        if (dpArray.get(index).get(sellFlag) != -1) {
+            return dpArray.get(index).get(sellFlag);
+        }
+
+        long result;
+
+        if (sellFlag == 0) {
+            long skip = recursionFun(values,  index + 1, 0, arrayLength, dpArray);
+            long buy = -values[index] + recursionFun(values,  index + 1, 1, arrayLength, dpArray);
+            result = Math.max(skip, buy);
+        } else {
+            long hold = recursionFun(values,  index + 1, 1, arrayLength, dpArray);
+            long sell = values[index] + recursionFun(values, index + 1, 0, arrayLength, dpArray);
+            result = Math.max(sell, hold);
+        }
+
+        dpArray.get(index).set(sellFlag, result);
+        return result;
+    }
+
+    public static long getMaximumProfit(int n, long[] values) {
+        if (n == 0) {
+            return 0;
+        }
+
+        // Vector<Vector<Long>> dpArray = new Vector<>(n);
+        // for (int i = 0; i < n; i++) {
+        //     Vector<Long> row = new Vector<>(2);
+        //     row.addAll(Arrays.asList(-1L, -1L));
+        //     dpArray.add(row);
+        // }
+
+        // return recursionFun(values, 0,  0, n - 1, dpArray);
+
+        Vector<Long> next = new Vector<>(2);
+
+        next.addAll(Arrays.asList(0L, values[values.length-1]));
+
+        for(int i = n-2;i>=0;i--){
+
+            Vector<Long> current = new Vector<>(2);
+
+            for(int j =0;j<=1;j++){
+
+                if (j == 0) {
+                    long skip = next.get(0);
+                    long buy = -values[i] + next.get(1);
+                    current.add(Math.max(skip, buy));
+                } else {
+                    long hold = next.get(1);
+                    long sell = values[i] + next.get(0);
+                    current.add(Math.max(sell, hold));
+                }
+            }
+
+            next = current;
+
+        }
+
+        return next.get(0);
+    }
+}
