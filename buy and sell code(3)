@@ -1,0 +1,63 @@
+public class Solution {
+    public static int recursionFun(int [] prices,int ind, int sellFlag, int limit, int [][][] dpArray){
+
+        if(limit==0){
+            return 0;
+
+        }
+        if(prices.length==ind){
+            return 0;
+        }
+
+        if(dpArray[ind][sellFlag][limit]!=-1){
+            return dpArray[ind][sellFlag][limit];
+        }
+
+        if(sellFlag==0){
+            return dpArray[ind][sellFlag][limit] = Math.max((-prices[ind] + recursionFun(prices,ind+1,1,limit,dpArray)),recursionFun(prices,ind+1,0,limit,dpArray));
+        }
+        else{
+            return dpArray[ind][sellFlag][limit] = Math.max((prices[ind]+ recursionFun(prices,ind+1,0,limit-1,dpArray)),(recursionFun(prices,ind+1,1,limit,dpArray)));
+        }       
+    }
+    public static int maxProfit(int[] prices) {
+        
+        int n = prices.length;
+        int [][] prev = new int[2][3];
+
+        // for(int i =0;i<n;i++){
+        //     for(int j =0;j<2;j++){
+        //         for(int k =0;k<3;k++){
+        //             dpArray[i][j][k] = -1;
+        //         }
+        //     }
+        // }
+
+        prev[1][1] = prices[prices.length-1];
+
+        prev[1][2] = prices[prices.length-1];
+
+        for(int i = n-2;i>=0;i--){
+            
+            int [][] curr = new int[2][3];
+            
+            for(int j =0;j<2;j++){
+
+                for(int k =2;k>0;k--){
+
+                    if(j==0){
+                        curr[j][k] = Math.max((-prices[i] + prev[1][k]),(prev[0][k]));
+                    }
+                    else{
+                        curr[j][k] = Math.max((prices[i]+ prev[0][k-1]),(prev[1][k]));
+                    }           
+                }
+            }
+            prev = curr;
+        }
+
+        return Math.max(prev[0][2],prev[0][2]);
+
+        // return recursionFun(prices,0,0,2,dpArray);
+    }
+}
